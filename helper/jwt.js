@@ -1,19 +1,19 @@
-import jwt from "jsonwebtoken"
-const secretKey = "qwer12345"
-const payload = {
-    id: 12,
-  name: "Umar",
-    role: "teacher",
-    staffid: 212345
-}
-const expriseIN = {expriseIN: '2s'}
-const token = jwt.sign(payload, secretKey,expriseIN)
-console.log({token})
-function checkToken(token) {
-    var decoded = jwt.verify(token,secretKey)
-    console.log({decoded})
+import jwt from "jsonwebtoken";
+
+export function generateToken(payload, secret, expiresIn) {
+  try {
+    const token = jwt.sign(payload, secret, { expiresIn });
+    return token;
+  } catch (e) {
+    throw new Error(e);
+  }
 }
 
-setTimeout(() => {
-    checkToken(token)
-}, 5000)
+export function verifyToken(token, secret) {
+  try {
+    const decoded = jwt.verify(token, secret);
+    return decoded;
+  } catch (e) {
+    throw new Error(e);
+  }
+}
