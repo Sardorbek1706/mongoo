@@ -1,10 +1,8 @@
-import 'dotenv/config';
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const config = {
-  jwt: {
-    accessSecret: process.env.JWT_ACCESS_SECRET,
-    refreshSecret: process.env.JWT_REFRESH_SECRET,
-  },
-  app: { port: process.env.PORT },
-  db: { url: process.env.DB_URL },
+  port: process.env.PORT || 5000,
+  mongo_uri: process.env.MONGO_URI || "mongodb://127.0.0.1:27017/water_delivery",
 };

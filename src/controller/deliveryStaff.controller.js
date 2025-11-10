@@ -4,13 +4,13 @@ import { ApiError } from '../helper/errorMessage.js';
 export const DeliveryStaffController = {
     getAll: async (req, res, next) => {
       try {
-      const model = DeliveryStaffModel;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search || '';
       const skip = (page - 1) * limit;
-      const fields = Object.keys(model.schema.paths).filter(
-        (f) => !['_id', '__v', 'createdAt', 'updatedAt'].includes(f),
+      const fields = Object.keys(DeliveryStaffModel.schema.paths).filter(
+        (f) => !['_id', '__v', 'createdAt', 'updatedAt'].includes(f) &&
+          DeliveryStaffModel.schema.paths[f].instance === 'String',
       );
       const query = search
         ? {
@@ -20,8 +20,8 @@ export const DeliveryStaffController = {
           }
         : {};
       const [data, total] = await Promise.all([
-        model.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
-        model.countDocuments(query),
+        DeliveryStaffModel.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+        DeliveryStaffModel.countDocuments(query),
       ]);
       return res.status(200).json({
         success: true,
@@ -37,9 +37,8 @@ export const DeliveryStaffController = {
   }, 
   getOne: async (req, res, next) => {
     try {
-      const model = DeliveryStaffModel;
       const { id } = req.params;
-      const data = await model.findOne({ _id: id });
+      const data = await DeliveryStaffModel.findOne({ _id: id });
       if (!data) {
         return next(new ApiError(404, `NOT FOUND SUCH AN ID` ))
       }
@@ -52,51 +51,30 @@ export const DeliveryStaffController = {
       return next(error);
     }
   },
-  createOne = async (req, res, next) => {
+  
+  createOne : async (req, res, next) => {
     try {
-      const model = DeliveryStaffModel;
-      if (!model) {
-        return res
-          .status(404)
-          .json({
-            success: false,
-            message: `NOT FOUND SUCH A MODEL NAME!`,
-            DeliveryStaffModel,
-          });
-      }
       const body = req.validatedData;
-      const data = await model.create(body);
+      const data = (await DeliveryStaffModel.create(body));
+      const staff = data.toObject()
+      delete staff.password
       return res.status(201).json({
         success: true,
         message: `CREATED SUCCESSFULLY!`,
-        data,
+        data: staff,
       });
     } catch (error) {
       return next(error);
     }
-  };
+  },
 
-export const updateOne = async (req, res, next) => {
+  updateOne: async (req, res, next) => {
     try {
-      const model = DeliveryStaffModel;
-      if (!model) {
-        return res
-          .status(404)
-          .json({
-            success: false,
-            message: `NOT FOUND SUCH A MODEL NAME!`,
-            DeliveryStaffModel,
-          });
-      }
       const { id } = req.params;
       const body = req.validatedData;
-      const data = await model.findByIdAndUpdate(id, body, { new: true });
+      const data = await DeliveryStaffModel.findByIdAndUpdate(id, body, { new: true });
       if (!data) {
-        return res.status(404).json({
-          success: false,
-          message: `NOT FOUND SUCH AN ID`,
-          id,
-        });
+        return next(new ApiError(404, `NOT FOUND SUCH AN ID`))
       }
       return res.status(200).json({
         success: true,
@@ -106,28 +84,14 @@ export const updateOne = async (req, res, next) => {
     } catch (error) {
       return next(error);
     }
-  };
+  },
 
-export const deleteOne = async(req, res, next) => {
+deleteOne : async(req, res, next) => {
     try {
-      const model = DeliveryStaffModel;
-      if (!model) {
-        return res
-          .status(404)
-          .json({
-            success: false,
-            message: `NOT FOUND SUCH A MODEL NAME!`,
-            DeliveryStaffModel,
-          });
-      }
       const { id } = req.params;
-      const data = await model.findByIdAndDelete({ _id: id });
+      const data = await DeliveryStaffModel.findByIdAndDelete(id);
       if (!data) {
-        return res.status(404).json({
-          success: false,
-          message: `NOT FOUND SUCH AN ID`,
-          id,
-        });
+        return next(new ApiError(404, `NOT FOUND SUCH AN ID`))
       }
       return res.status(200).json({
         success: true,

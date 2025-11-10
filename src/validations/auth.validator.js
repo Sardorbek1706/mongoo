@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+
 export const loginValidate = z
   .object({
     email: z.string().email().trim().toLowerCase(),
@@ -9,7 +10,7 @@ export const loginValidate = z
       .max(30, `TOO LONG PASSWORD`),
   });
 
-export const validateStaff = z
+export const registerValidate = z
   .object({
     email: z.string().email().trim().toLowerCase(),
     password: z
@@ -37,15 +38,16 @@ export const validateStaff = z
       .string()
       .regex(/^[0-9a-fA-F]{24}$/, 'Invalid district ID')
       .optional(),
-    role: z.enum(['staff']).optional()
+    role: z.enum(['staff', 'customer']).optional()
   });
 
-  export const validateCustomer = z.object({
-     email: z.string().email().trim().toLowerCase(),
+  export const adminValidate = z
+  .object({
+    email: z.string().email().trim().toLowerCase(),
     password: z
       .string()
-      .min(8, `juda qisqa parol`)
-      .max(30, `juda uzun parol`)
+      .min(8, `TOO SHORT PASSWORD`)
+      .max(30, `TOO LONG PASSWORD`)
       .trim(),
     name: z
       .string()
@@ -55,6 +57,7 @@ export const validateStaff = z
       .regex(/^[a-zA-Z\s]+$/, 'Name must contain only letters and spaces'),
     phone: z
       .string()
-      .regex(/^\+\d{10,15}$/, 'Invalid phone number'),
-    role: z.enum(['customer']).optional()
-  })
+      .regex(/^\+\d{10,15}$/, 'Invalid phone number')
+      .optional(),
+    role: z.enum(['admin']).optional()
+  });

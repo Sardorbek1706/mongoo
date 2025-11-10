@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
 export function generateToken(payload, secret, expiresIn) {
   try {
@@ -12,8 +12,8 @@ export function generateToken(payload, secret, expiresIn) {
 export function verifyToken(token, secret) {
   try {
     const decoded = jwt.verify(token, secret);
-    return decoded;
+    return decoded
   } catch (e) {
-    throw new Error(e);
+    throw new Error(e)
   }
 }
